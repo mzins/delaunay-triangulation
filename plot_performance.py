@@ -1,3 +1,4 @@
+import csv
 import random
 import time
 
@@ -24,4 +25,10 @@ for size in sizes:
 
 
 plt.plot(sizes, times, linestyle='-', marker='o')
-plt.savefig("algorithm-performance.png")
+plt.savefig("performance-results/plot.png")
+
+with open("performance-results/data.csv", "w") as f:
+    f.write("input_size, time\n")
+
+    for i in range(0, len(sizes)):
+        f.write(f"{sizes[i]}, {times[i]}\n")
