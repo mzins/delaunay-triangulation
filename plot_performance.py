@@ -24,4 +24,4 @@ for size in sizes:
 
 
 plt.plot(sizes, times, linestyle='-', marker='o')
-plt.show()
+plt.savefig("algorithm-performance.png")
