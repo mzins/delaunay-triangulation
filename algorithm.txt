@@ -1,0 +1,86 @@
+Delaunay [S]:
+    IF len(S) = 2 :
+        // Let sl, a2 be the two sites, in sorted order. Create an edge a from s I to ~2 
+        a <-MakeEdge(); 
+        a.Org + sl; 
+        a.Dest+. s2; 
+        RETURN [a, a.Sym] 
+
+    ELSIF len(S) = 3:
+        // Let sl, s2, s3 be the three sites, in sorted order.
+        // Create edges a connecting s 1 to s2 and b connecting a2 to s3 
+        a <- MakeEdge(); 
+        b <- MakeEdge(); 
+        Splice [a.Sym, b];
+
+        a.Org <- s1; 
+        a.Dest <- b.Org;
+        b.Org <- s2; 
+        b.Dest <- s3;
+        
+        // (Now close the triangle:)
+        IF CCW[sl, s2, s3] THEN 
+            c - Connect[b, a]; 
+            RETURN [a, b.Sym]
+
+        ELSIF CCW[sl, ~3, s2] THEN 
+            c c Connect [b, a]; 
+            RETURN [c.Sym, c] 
+        
+        ELSE 
+            // The three points are collinear
+            RETURN [a, b.Sym] 
+    ELSE 
+        // len(S) >= 4. Let L and R be the left and right halues of S
+        [ldo, ldi] <- Delaunay[L]; 
+        [rdi, rdo] <- Deldufldy[R];
+
+        // Compute the lower common tangent of L and R
+        DO
+            IF LeftOf[rdi.Org, ldi]  
+                ldi <- ldi.Lnext 
+            ELSIF RightOf[ldi.Org, rdi] 
+                rdi <- rdi.Rprev 
+            ELSE 
+                EXIT
+        // Create a first cross edge basel from rdi.Org to ldi.Org
+        basel <- Connect[rdi.Sym, ldi]
+        IF ldi.Org = ldo.Org 
+            ldo <- basel.Sym
+        IF rdi.Org = rdo.Org
+            rdo <- basel
+        DO // This is the merge loop
+            // Locate the first L point (lcand.Dest) to be encountered by the rising bubble,
+            // and delete L edges out of basel. Dest that fail the circle test.
+
+            lcand <- basel.Sym.Onext;
+            IF Valid[lcand] THEN
+                WHILE InCircle[basel.Dest, basel.Org, lcand.Dest, lcand.Onext.Dest]
+                    t <- lcand.Onext
+                    DeleteEdge[lcand]
+                    lcand <- t 
+
+        
+            // {Symmetrically, locate the first R point to be hit, and delete R edges:} 
+            rcand <- basel.Oprev;
+            
+            IF Valid[rcand] 
+                WHILE InCircle[basel.Dest, basel.Org, rcand.Dest, rcand.Oprev.Dest]
+                    t <- rcand.Oprev
+                    DeleteEdge[rcand];
+                    rcand <- t
+                
+            // If both lcand and rcand are invalid, then basel is the upper common tangent
+            IF NOT Valid[lcand] AND NOT Valid[rcand] 
+                EXIT
+            
+            // The next cross edge is to be connected to either lcand.Dest or rcand.Dest 
+            // If both are valid, then choose the appropriate one using the InCircle test
+            IF NOT Valid[lcand] OR (Valid[rcand] AND InCircle[lcand.Dest,lcand.Org, rcand.Org, rcand.Dest])
+                // Add cross edge basel from rcand.Dest to basel.Dest
+                basel <- Connect[rcand, basel.Sym]
+            ELSE
+                basel- Connect[basel.Sym, lcand.Sym]
+        FI 
+
+    RETURN [ldo, rdo]
